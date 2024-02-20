@@ -1,0 +1,27 @@
+<% layout("layouts/boilerplate") %>
+
+    <div class="container">
+        <h1 class="text-center">All Poems!</h1>
+
+        <div class="row justify-content-center">
+            <% for(let p of poems){ %>
+                <div class="card mt-3 mx-2" style="max-width: 27rem">
+                    <div class="card-header">
+                        <b>Poem</b>
+                    </div>
+                    <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p>
+                                <%= p.poem %>
+                            </p>
+                            <footer class="blockquote-footer">By <cite title="Source Title">
+                                    <%= p.author.username %>
+                                </cite></footer>
+                        </blockquote>
+
+                        <a href="/poems/<%= p._id %>" class="btn btn-info">View</a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>

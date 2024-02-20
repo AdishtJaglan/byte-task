@@ -1,0 +1,11 @@
+<% layout("layouts/boilerplate") %>
+
+    <h1>Create a Poem!</h1>
+
+    <form action="/poems" method="POST">
+        <div class="mb-3">
+            <label for="poem" class="form-label">Enter Poem:</label>
+            <textarea class="form-control" name="poem" id="poem" cols="30" rows="10">Write Your Poem!</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Create!</button>
+    </form>

@@ -1,0 +1,18 @@
+<% layout("layouts/boilerplate") %>
+
+    <h1>This is the Login Page</h1>
+
+    <form action="/login" method="POST" class="needs-validation">
+        <div class="mb-3">
+            <label class="form-label" for="username">Enter Username:</label>
+            <input class="form-control" type="text" name="username" id="username">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="password">Enter password:</label>
+            <input class="form-control" type="password" name="password" id="password">
+        </div>
+        <div class="mb-3">
+            <button class="btn btn-success">Login!</button>
+        </div>
+    </form>

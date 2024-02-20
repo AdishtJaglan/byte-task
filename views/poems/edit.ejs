@@ -1,0 +1,11 @@
+<% layout("layouts/boilerplate") %>
+
+    <h1>Edit Page!</h1>
+
+    <form action="/poems/<%= poem._id %>?_method=PUT" method="POST">
+        <div class="mb-3">
+            <label for="poem" class="form-label">Update Poem:</label>
+            <textarea class="form-control" name="poem" id="poem" cols="30" rows="10"><%= poem.poem %></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Update!</button>
+    </form>

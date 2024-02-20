@@ -1,0 +1,23 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="card mx-auto">
+    <div class="card-header">
+        <h3>Poem</h3>
+    </div>
+
+    <div class="card-body">
+        <blockquote class="blockquote mb-0">
+            <p><%= poem.poem %></p>
+            <footer class="blockquote-footer">By <cite title="Source Title"><%= poem.author.username %></cite></footer>
+        </blockquote>
+    </div>
+    
+    <% if(currentUser && poem.author.equals(currentUser._id)){ %>
+        <div class="card-footer d-flex justify-content-between">
+            <a href="/poems/<%= poem._id %>/edit" class="btn btn-info">Edit Poem!</a>
+            <form action="/poems/<%= poem._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-danger">Delete!</button>
+            </form>
+        </div>
+    <% } %>
+</div>
