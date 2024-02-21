@@ -4,13 +4,12 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const User = require("./models/user");
-const Poem = require("./models/poem");
 const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const passportLocal = require("passport-local");
-const { isLoggedIn, storeReturnTo, isAuthor } = require("./middleware");
 const poemRoutes = require("./routes/poems");
+const userRoutes = require("./routes/users");
 const app = express();
 
 const configSessions = {
@@ -53,6 +52,10 @@ app.use((req, res, next) => {
     next();
 })
 
+//setting up express router
+app.use("/poems", poemRoutes);
+app.use("/", userRoutes);
+
 mongoose.connect("mongodb://127.0.0.1:27017/byteTask")
     .then(() => {
         console.log("Database is connected");
@@ -61,111 +64,6 @@ mongoose.connect("mongodb://127.0.0.1:27017/byteTask")
         console.log("Connection Failed!");
         console.log(e);
     });
-
-//form to create new poem
-app.get("/poems/new", isLoggedIn, (req, res) => {
-    res.render("poems/new", { head: "Create Poem" });
-});
-
-//show all poem
-app.get("/poems", async (req, res) => {
-    const poems = await Poem.find({}).populate("author");
-
-    res.render("poems/index", { poems, head: "All Poems" });
-});
-
-//creating new poem
-app.post("/poems", isLoggedIn, async (req, res) => {
-    const newPoem = new Poem(req.body);
-    newPoem.author = req.user._id;
-
-    await newPoem.save();
-
-    req.flash("success", "Created New Poem!");
-    res.redirect(`/poems/${newPoem._id}`);
-});
-
-//viewing a poem
-app.get("/poems/:id", async (req, res) => {
-    const { id } = req.params;
-    const poem = await Poem.findById(id).populate("author");
-
-    res.render("poems/show", { poem, head: "Viewing Poem" });
-});
-
-//edit form
-app.get("/poems/:id/edit", isLoggedIn, isAuthor, async (req, res) => {
-    const { id } = req.params;
-    const poem = await Poem.findById(id);
-
-    res.render("poems/edit", { poem, head: "Edit Poem" });
-});
-
-//updating poem
-app.put("/poems/:id", isLoggedIn, isAuthor, async (req, res) => {
-    const { id } = req.params
-    const updatedPoem = await Poem.findByIdAndUpdate(id, req.body, { runValidators: true, new: true });
-
-    await updatedPoem.save();
-
-    req.flash("success", "Updated Poem!");
-    res.redirect("/poems");
-});
-
-//deleting poems
-app.delete("/poems/:id", isLoggedIn, isAuthor, async (req, res) => {
-    const { id } = req.params;
-    await Poem.findByIdAndDelete(id);
-
-    req.flash("error", "Deleted Poem!");
-    res.redirect("/poems");
-});
-
-//form to register
-app.get("/register", (req, res) => {
-    res.render("users/register", { head: "Register" });
-});
-
-//registering user
-app.post("/register", async (req, res) => {
-    const { username, email, password } = req.body;
-    const user = new User({ username, email });
-    const newUser = await User.register(user, password);
-
-    req.login(newUser, err => {
-        if (err) return next(err);
-
-        req.flash("success", "Welcome! Logged In!");
-        res.redirect("/poems");
-    })
-});
-
-//form to login
-app.get("/login", (req, res) => {
-    res.render("users/login", { head: "Login Page" });
-});
-
-//logging in
-app.post("/login", storeReturnTo, passport.authenticate("local", { failureFlash: true, failureMessage: "/login" }), (req, res) => {
-    req.flash("success", "Successfully Logged In!");
-
-    const redirectUrl = res.locals.returnTo || "/poems";
-    delete req.session.returnTo;
-
-    res.redirect(redirectUrl);
-});
-
-//logout 
-app.get("/logout", (req, res) => {
-    req.logOut(function (err) {
-        if (err) {
-            return next(err);
-        }
-        req.flash("success", "Succesfully Logged You Out!");
-
-        res.redirect("/poems");
-    });
-});
 
 app.listen(3000, () => {
     console.log("Listening on Port 3000!");
